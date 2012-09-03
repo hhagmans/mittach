@@ -18,10 +18,13 @@
       <p>Mitarbeiter 3 €, Externe 5 €</p>
     </header>
     <nav>
-        <a href="{{ url_for("report_bookings", start=g.last_month["start"], end=g.last_month["end"]) }}">
-            Report ({{ g.last_month["name"] }})
         </a>
         {% block admin %}
+        <a href="{{ url_for("report_bookings", start=g.last_month["start"], end=g.last_month["end"]) }}">
+            Report ({{ g.last_month["name"] }})
+        <br>
+        <a href="{{ url_for("report_bookings_var") }}">
+            Report Other Month
         <br>
         <a href="{{ url_for("list_events", page=1) }}">
             Admin verlassen

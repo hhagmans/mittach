@@ -37,15 +37,26 @@ def list_events(db, start=None, end=None):
     scoped = start and end
     event_ids = db.lrange("events", 0, -1) # XXX: does not scale!?
 
+    
     events = []
     for event_id in event_ids: # XXX: use `map`?
         namespace = "events:%s" % event_id
-        date = format_date(db.get("%s:date" % namespace))
-        if not scoped or start <= date <= end:
-            slots = int(db.get("%s:slots" % namespace))
-            event = {
+        date = db.get("%s:date" % namespace)
+        if not scoped:
+            event = get_event_for_list(db, event_id, date)
+            events.append(event)
+        elif start <= date <= end:
+            event = get_event_for_list(db, event_id, date)
+            events.append(event)
+            
+    return events # TODO: use generator
+
+def get_event_for_list(db, event_id, date):
+    namespace = "events:%s" % event_id
+    slots = int(db.get("%s:slots" % namespace))
+    event = {
                 "id": int(event_id),
-                "date": date,
+                "date": format_date(date),
                 "title": db.get("%s:title" % namespace).decode("utf-8"),
                 "details": (db.get("%s:details" % namespace) or "").decode("utf-8"),
                 "slots": slots,
@@ -53,9 +64,7 @@ def list_events(db, start=None, end=None):
                 "vegetarians": db.lrange("%s:vegetarians" % namespace, 0, -1),
                 "bookings": db.lrange("%s:bookings" % namespace, 0, -1)
             }
-            events.append(event)
-
-    return events # TODO: use generator
+    return event
 
 def get_bookings(db,event_id):
     namespace = "events:%s" % event_id

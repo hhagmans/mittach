@@ -132,6 +132,13 @@ def create_event():
             event["slots"] = "unendlich"
         return render_template_string('{% extends "layout.html" %} {% block body %} {% include "create_event.html" %} {% endblock %}', new_event=event)
 
+@app.route("/reports/")
+def report_bookings_var():
+    return render_template_string('{% extends "layout.html" %} {% block body %} {% include "booking.html" %} {% endblock %}')
+
+@app.route("/reports/send", methods=["POST"])
+def report_bookings_send():
+    return redirect(url_for("report_bookings", start=request.form["start"], end=request.form["end"]))
 
 @app.route("/reports/<start>/<end>")
 def report_bookings(start, end):
@@ -140,10 +147,6 @@ def report_bookings(start, end):
 
     both start and end date are ISO-8601 date strings
     """
-    try:
-        start, end = map(normalize_date, (start, end))
-    except ValueError:
-        abort(400)
 
     events_by_user = defaultdict(lambda: [])
     for event in database.list_events(g.db, start, end):
@@ -151,7 +154,7 @@ def report_bookings(start, end):
             date = format_date(event["date"], True)
             events_by_user[username].append(date)
 
-    rows = ["Mitarbeiter; Anzahl; Details"]
+    rows = ["Mitarbeiter;Anzahl;Details"]
     rows += [";".join([username, unicode(len(dates)), ", ".join(dates)])
             for username, dates in events_by_user.items()]
 
@@ -173,7 +176,7 @@ def validate(event, new=True):
     date = event["date"]
     try:
         assert len(date) == 10, u"Ungültiges Datum."
-        if new == True:
+        if new:
             date_current = datetime.strptime(date, "%Y-%m-%d")
             date_now = datetime.now()
             assert date_now < date_current, u"Datum liegt in der Vergangenheit."
@@ -184,7 +187,7 @@ def validate(event, new=True):
     if (event["title"] is None or event["title"].strip() == ""):
         errors["title"] = u"Speisentitel fehlt."
 
-    if new == True:
+    if new:
         prevdates = []
         for e in database.list_events(g.db):
             prevdates.append(e["date"])
