@@ -17,7 +17,7 @@ from . import database
 from flask import current_app
 
 NAME = "Mittach" # XXX: unnecessary?
-ADMINS = [u"co", u"hendrikh", u"anjaa", u"hendrik11"]
+ADMINS = [u"co", u"hendrikh", u"anjaa", u"uschin", u"mkl", u"hendrik11"]
 MAXEVENTS = 10 # Max events on one page
 
 
@@ -134,7 +134,7 @@ def create_event():
 
 @app.route("/reports/")
 def report_bookings_var():
-    return render_template_string('{% extends "layout.html" %} {% block body %} {% include "booking.html" %} {% endblock %}')
+    return render_template_string('{% extends "layout.html" %} {% block body %} {% include "report_booking.html" %} {% endblock %}')
 
 @app.route("/reports/send", methods=["POST"])
 def report_bookings_send():
