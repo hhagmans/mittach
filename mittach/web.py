@@ -6,6 +6,7 @@ import os
 
 from datetime import date, datetime, timedelta
 from collections import defaultdict
+import json
 from math import ceil
 
 from flask import Flask, g, request, url_for, make_response, redirect, abort, \
@@ -16,7 +17,7 @@ from . import database
 
 from flask import current_app
 
-NAME = "Mittach" # XXX: unnecessary?
+NAME = "mittach" # XXX: unnecessary?
 ADMINS = [u"co", u"hendrikh", u"anjaa", u"uschin", u"mkl", u"hendrik11"]
 MAXEVENTS = 10 # Max events on one page
 
@@ -163,6 +164,18 @@ def report_bookings(start, end):
     response.headers["Content-Disposition"] = "attachment;filename=%s_%s.csv" % (
             start, end)
     return response
+
+@app.route("/reports/json/")
+def new_bookings_json_next_week():
+    return json.dumps(database.list_events(g.db, (get_next_Monday() - timedelta(days=1)).isoformat(), (get_next_Monday() + timedelta(days=7)).isoformat()))
+
+@app.route("/reports/json/<end>/")
+def new_bookings_json_specific_end(end):
+    return json.dumps(database.list_events(g.db, datetime.now().isoformat(), end))
+
+@app.route("/reports/json/<start>/<end>/")
+def new_bookings_json_specific_timedelta(start, end):
+    return json.dumps(database.list_events(g.db, start, end))
 
 
 def validate(event, new=True):
@@ -315,6 +328,13 @@ def get_Friday(value):
     timedel = timedelta(days=datetime.strptime(value, "%Y-%m-%d").weekday() + 2)
     date = date - timedel
     return date
+
+def get_next_Monday():
+    """
+    returns the date of the next Monday as an datetime object
+    """
+    date_now = datetime.now();
+    return date_now + timedelta(days=(7 - date_now.weekday()))
 
 def get_Event_from_Request(request):
     event = {
