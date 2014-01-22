@@ -19,7 +19,7 @@ release: dist
 	git tag v`python -c 'import mittach; print mittach.__version__'`
 	git push origin master --tags
 
-dist: clean test
+dist:
 	rm -r dist || true
 	python setup.py sdist
 

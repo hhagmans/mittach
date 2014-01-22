@@ -5,9 +5,9 @@ set -x
 
 host="internal2.innoq.com"
 
-ssh $host 'if [ -f ~/tmp/mittach-*.tar.gz ]; then rm ~/tmp/mittach-*.tar.gz; fi'
-scp dist/mittach-*.tar.gz $host:~/tmp/
-ssh $host 'cd /var/www/internal.innoq.com/mittach/ && ' \
+ssh $host -l mittach 'if [ -f ~/tmp/mittach-*.tar.gz ]; then rm ~/tmp/mittach-*.tar.gz; fi'
+scp dist/mittach-*.tar.gz mittach@$host:~/tmp/mittach-*.tar.gz
+ssh $host -l mittach 'cd /var/www/internal.innoq.com/mittach/ && ' \
 		'. venv/bin/activate && ' \
 		'pip install -U $HOME/tmp/mittach-*.tar.gz && ' \
 		'touch /var/www/internal.innoq.com/mittach/app.wsgi'
