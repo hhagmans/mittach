@@ -16,8 +16,8 @@ setup(name=NAME,
         packages=find_packages(exclude=["test"]),
         include_package_data=True,
         zip_safe=False,
-  #      install_requires=["Flask", "redis"],
-   #     extras_require = {
-    #        "testing": ["pytest"],
-     #       "coverage": ["figleaf", "coverage"]}
+      #  install_requires=["Flask", "redis"],
+        extras_require = {
+            "testing": ["pytest"],
+            "coverage": ["figleaf", "coverage"]}
       )
