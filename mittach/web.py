@@ -173,7 +173,7 @@ def new_bookings_json_next_week():
 def new_bookings_json_specific_end(end):
     return json.dumps(database.list_events(g.db, datetime.now().isoformat(), end))
 
-@app.route("/reports/json/?start=<start>&end=<end>")
+@app.route("/reports/json/<start>/<end>/")
 def new_bookings_json_specific_timedelta(start, end):
     return json.dumps(database.list_events(g.db, start, end))
 
